@@ -72,7 +72,9 @@ describe('test/view.test.ts', () => {
           * render() {
             yield 'a';
           }
-          renderString() {}
+          * renderString() {
+            yield 'a';
+          }
         }
         assert.throws(() => {
           app.view.use('d', View as any);
