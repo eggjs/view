@@ -1,3 +1,43 @@
+# Changelog
+
+## [3.0.0](https://github.com/eggjs/view/compare/v2.1.4...v3.0.0) (2025-02-03)
+
+
+### ⚠ BREAKING CHANGES
+
+* drop Node.js < 18.19.0 support
+
+part of https://github.com/eggjs/egg/issues/3644
+
+https://github.com/eggjs/egg/issues/5257
+
+<!-- This is an auto-generated comment: release notes by coderabbit.ai
+-->
+## Summary by CodeRabbit
+
+- **New Features**
+  - Introduced a streamlined release workflow for automated publishing.
+- Enhanced view rendering with asynchronous methods for improved
+performance.
+- **Refactor**
+- Modernized the codebase by migrating from generator functions to
+async/await and adopting ES module syntax.
+- Rebranded the package from "egg-view" to "@eggjs/view" with updated
+dependency management.
+- **Documentation**
+- Updated installation instructions and usage examples to reflect the
+new package name.
+- **Chores**
+- Upgraded Node.js support to version ≥ 18.19.0 and refined
+configuration settings.
+- **Bug Fixes**
+- Removed obsolete configuration files and streamlined project structure
+for better maintainability.
+<!-- end of auto-generated comment: release notes by coderabbit.ai -->
+
+### Features
+
+* support cjs and esm both by tshy ([#19](https://github.com/eggjs/view/issues/19)) ([c94425a](https://github.com/eggjs/view/commit/c94425a525768a3a6cd07c8ba024fa4a3974fc0b))
 
 2.1.4 / 2023-02-03
 ==================
@@ -67,4 +107,3 @@
 ==================
 
 init version
-
