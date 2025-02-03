@@ -71,12 +71,12 @@ exports.renderStringLocals = ctx => {
   return ctx.render('', { b: 2 }, { viewEngine: 'ejs' });
 };
 
-exports.renderStringTwice = function* (ctx) {
+exports.renderStringTwice = async (ctx) => {
   const opt = { viewEngine: 'ejs' };
-  const res = yield [
+  const res = await Promise.all([
     ctx.renderString('a', {}, opt),
     ctx.renderString('b', {}, opt),
-  ];
+  ]);
   ctx.body = res.map(o => o.tpl).join(',');
 };
 

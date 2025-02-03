@@ -1,12 +1,13 @@
-# egg-view
+# @eggjs/view
 
-[![NPM version](https://img.shields.io/npm/v/egg-view.svg?style=flat-square)](https://npmjs.org/package/egg-view)
-[![NPM quality](http://npm.packagequality.com/shield/egg-view.svg?style=flat-square)](http://packagequality.com/#?package=egg-view)
-[![NPM download](https://img.shields.io/npm/dm/egg-view.svg?style=flat-square)](https://npmjs.org/package/egg-view)
-
-[![Continuous Integration](https://github.com/egg/egg-view/actions/workflows/nodejs.yml/badge.svg)](https://github.com/egg/egg-view/actions/workflows/nodejs.yml)
-[![Test coverage](https://img.shields.io/codecov/c/github/egg/egg-view.svg?style=flat-square)](https://codecov.io/gh/egg/egg-view)
-
+[![NPM version](https://img.shields.io/npm/v/@eggjs/view.svg?style=flat-square)](https://npmjs.org/package/@eggjs/view)
+[![NPM quality](http://npm.packagequality.com/shield/@eggjs/view.svg?style=flat-square)](http://packagequality.com/#?package=@eggjs/view)
+[![NPM download](https://img.shields.io/npm/dm/@eggjs/view.svg?style=flat-square)](https://npmjs.org/package/@eggjs/view)
+[![Continuous Integration](https://github.com/eggjs/view/actions/workflows/nodejs.yml/badge.svg)](https://github.com/eggjs/view/actions/workflows/nodejs.yml)
+[![Test coverage](https://img.shields.io/codecov/c/github/eggjs/view.svg?style=flat-square)](https://codecov.io/gh/eggjs/view)
+[![Node.js Version](https://img.shields.io/node/v/@eggjs/view.svg?style=flat)](https://nodejs.org/en/download/)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://makeapullrequest.com)
+![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/eggjs/view)
 
 Base view plugin for egg
 
@@ -15,7 +16,7 @@ Base view plugin for egg
 ## Install
 
 ```bash
-$ npm i egg-view --save
+npm i @eggjs/view
 ```
 
 ## Usage
@@ -24,7 +25,7 @@ $ npm i egg-view --save
 // {app_root}/config/plugin.js
 exports.view = {
   enable: true,
-  package: 'egg-view',
+  package: '@eggjs/view',
 };
 ```
 
@@ -258,7 +259,7 @@ exports.view = {
 };
 ```
 
-see [config/config.default.js](https://github.com/eggjs/egg-view/blob/master/config/config.default.js) for more detail.
+see [config/config.default.ts](https://github.com/eggjs/view/blob/master/src/config/config.default.ts) for more detail.
 
 ## Questions & Suggestions
 
@@ -266,12 +267,17 @@ Please open an issue [here](https://github.com/eggjs/egg/issues).
 
 ## License
 
-[MIT](https://github.com/eggjs/egg-view/blob/master/LICENSE)
+[MIT](LICENSE)
 
+## Contributors
+
+[![Contributors](https://contrib.rocks/image?repo=eggjs/logrotator)](https://github.com/eggjs/logrotator/graphs/contributors)
+
+Made with [contributors-img](https://contrib.rocks).
 
 [eggjs]: https://eggjs.org
 [ejs]: https://github.com/mde/ejs
 [egg-view-ejs]: https://github.com/eggjs/egg-view-ejs
-[egg-view]: https://github.com/eggjs/egg-view
+[egg-view]: https://github.com/eggjs/view
 [nunjucks]: http://mozilla.github.io/nunjucks
 [egg-view-nunjucks]: https://github.com/eggjs/egg-view-nunjucks

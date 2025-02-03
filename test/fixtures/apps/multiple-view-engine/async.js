@@ -1,6 +1,4 @@
-'use strict';
-
-const sleep = require('mz-modules/sleep');
+const { scheduler } = require('node:timers/promises');
 
 class AsyncView {
   render(filename, locals, options) {
@@ -10,7 +8,7 @@ class AsyncView {
       options,
       type: 'async',
     };
-    return sleep(10).then(() => ret);
+    return scheduler.wait(10).then(() => ret);
   }
 
   renderString(tpl, locals, options) {
@@ -20,7 +18,7 @@ class AsyncView {
       options,
       type: 'async',
     };
-    return sleep(10).then(() => ret);
+    return scheduler.wait(10).then(() => ret);
   }
 
 }
