@@ -113,6 +113,11 @@ describe('test/view.test.ts', () => {
         assert(res.body.locals.data === 1);
         assert(res.body.options.opt === 1);
         assert(res.body.type === 'ejs');
+        const ctx = app.mockContext();
+        assert.equal(typeof ctx.render, 'function');
+        assert.equal(typeof ctx.renderString, 'function');
+        assert.equal(typeof ctx.renderView, 'function');
+        assert.equal(typeof ctx.view.render, 'function');
       });
 
       it('should render nunjucks', async () => {
