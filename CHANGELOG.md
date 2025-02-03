@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.1](https://github.com/eggjs/view/compare/v3.0.0...v3.0.1) (2025-02-03)
+
+
+### Bug Fixes
+
+* should import context types ([46b153f](https://github.com/eggjs/view/commit/46b153fc9155456f674b413d7cac545959ed78ab))
+
 ## [3.0.0](https://github.com/eggjs/view/compare/v2.1.4...v3.0.0) (2025-02-03)
 
 
