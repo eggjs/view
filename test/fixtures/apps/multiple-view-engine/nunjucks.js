@@ -1,10 +1,8 @@
-'use strict';
-
-const sleep = require('mz-modules/sleep');
+const { scheduler } = require('node:timers/promises');
 
 class NunjucksView {
-  * render(filename, locals, options) {
-    yield sleep(10);
+  async render(filename, locals, options) {
+    await scheduler.wait(10);
     return {
       filename,
       locals,
@@ -13,8 +11,8 @@ class NunjucksView {
     };
   }
 
-  * renderString(tpl, locals, options) {
-    yield sleep(10);
+  async renderString(tpl, locals, options) {
+    await scheduler.wait(10);
     return {
       tpl,
       locals,

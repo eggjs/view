@@ -11,3 +11,6 @@ test/fixtures/apps/ts/**/*.js
 *-lock.yaml
 test/fixtures/ts/**/*.js
 test/fixtures/ts/**/*.d.ts
+.tshy*
+.eslintcache
+dist

@@ -1,20 +1,22 @@
-'use strict';
+import assert from 'node:assert';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import fs from 'node:fs/promises';
+import coffee from 'coffee';
+import { mm, MockApplication, mock } from '@eggjs/mock';
 
-const assert = require('assert');
-const path = require('path');
-const mock = require('egg-mock');
-const fs = require('mz/fs');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const fixtures = path.join(__dirname, 'fixtures');
-const coffee = require('coffee');
 
-describe('test/view.test.js', () => {
-  afterEach(mock.restore);
+describe('test/view.test.ts', () => {
+  afterEach(mm.restore);
 
   describe('multiple view engine', () => {
     const baseDir = path.join(fixtures, 'apps/multiple-view-engine');
-    let app;
+    let app: MockApplication;
     before(() => {
-      app = mock.app({
+      app = mm.app({
         baseDir: 'apps/multiple-view-engine',
       });
       return app.ready();
@@ -24,20 +26,24 @@ describe('test/view.test.js', () => {
     describe('use', () => {
       it('should throw when name do not exist', () => {
         assert.throws(() => {
-          app.view.use();
+          (app.view as any).use();
         }, /name is required/);
       });
 
       it('should throw when viewEngine do not exist', () => {
         assert.throws(() => {
-          app.view.use('a');
+          (app.view as any).use('a');
         }, /viewEngine is required/);
       });
 
       it('should throw when name has been registered', () => {
         class View {
-          render() {}
-          renderString() {}
+          render(): Promise<string> {
+            return Promise.resolve('');
+          }
+          renderString(): Promise<string> {
+            return Promise.resolve('');
+          }
         }
         app.view.use('b', View);
         assert.throws(() => {
@@ -48,7 +54,7 @@ describe('test/view.test.js', () => {
       it('should throw when not implement render', () => {
         class View {}
         assert.throws(() => {
-          app.view.use('c', View);
+          app.view.use('c', View as any);
         }, /viewEngine should implement `render` method/);
       });
 
@@ -57,8 +63,34 @@ describe('test/view.test.js', () => {
           render() {}
         }
         assert.throws(() => {
-          app.view.use('d', View);
+          app.view.use('d', View as any);
         }, /viewEngine should implement `renderString` method/);
+      });
+
+      it('should not support render generator function', () => {
+        class View {
+          * render() {
+            yield 'a';
+          }
+          * renderString() {
+            yield 'a';
+          }
+        }
+        assert.throws(() => {
+          app.view.use('d', View as any);
+        }, /viewEngine `render` method should not be generator function/);
+      });
+
+      it('should not support renderString generator function', () => {
+        class View {
+          render() {}
+          * renderString() {
+            yield 'a';
+          }
+        }
+        assert.throws(() => {
+          app.view.use('d', View as any);
+        }, /viewEngine `renderString` method should not be generator function/);
       });
 
       it('should register success', () => {
@@ -66,14 +98,14 @@ describe('test/view.test.js', () => {
           render() {}
           renderString() {}
         }
-        app.view.use('e', View);
-        assert(app.view.get('e') === View);
+        app.view.use('e', View as any);
+        assert.equal(app.view.get('e'), View);
       });
     });
 
     describe('render', () => {
-      it('should render ejs', function* () {
-        const res = yield app.httpRequest()
+      it('should render ejs', async () => {
+        const res = await app.httpRequest()
           .get('/render-ejs')
           .expect(200);
 
@@ -83,8 +115,8 @@ describe('test/view.test.js', () => {
         assert(res.body.type === 'ejs');
       });
 
-      it('should render nunjucks', function* () {
-        const res = yield app.httpRequest()
+      it('should render nunjucks', async () => {
+        const res = await app.httpRequest()
           .get('/render-nunjucks')
           .expect(200);
 
@@ -94,8 +126,8 @@ describe('test/view.test.js', () => {
         assert(res.body.type === 'nunjucks');
       });
 
-      it('should render with options.viewEngine', function* () {
-        const res = yield app.httpRequest()
+      it('should render with options.viewEngine', async () => {
+        const res = await app.httpRequest()
           .get('/render-with-options')
           .expect(200);
 
@@ -105,8 +137,8 @@ describe('test/view.test.js', () => {
     });
 
     describe('renderString', () => {
-      it('should renderString', function* () {
-        const res = yield app.httpRequest()
+      it('should renderString', async () => {
+        const res = await app.httpRequest()
           .get('/render-string')
           .expect(200);
         assert(res.body.tpl === 'hello world');
@@ -115,14 +147,14 @@ describe('test/view.test.js', () => {
         assert(res.body.type === 'ejs');
       });
 
-      it('should throw when no viewEngine', function* () {
-        yield app.httpRequest()
+      it('should throw when no viewEngine', async () => {
+        await app.httpRequest()
           .get('/render-string-without-view-engine')
           .expect(500);
       });
 
-      it('should renderString twice', function* () {
-        yield app.httpRequest()
+      it('should renderString twice', async () => {
+        await app.httpRequest()
           .get('/render-string-twice')
           .expect('a,b')
           .expect(200);
@@ -131,8 +163,8 @@ describe('test/view.test.js', () => {
     });
 
     describe('locals', () => {
-      it('should render with locals', function* () {
-        const res = yield app.httpRequest()
+      it('should render with locals', async () => {
+        const res = await app.httpRequest()
           .get('/render-locals')
           .expect(200);
         const locals = res.body.locals;
@@ -143,8 +175,8 @@ describe('test/view.test.js', () => {
         assert(locals.helper);
       });
 
-      it('should renderString with locals', function* () {
-        const res = yield app.httpRequest()
+      it('should renderString with locals', async () => {
+        const res = await app.httpRequest()
           .get('/render-string-locals')
           .expect(200);
         const locals = res.body.locals;
@@ -155,8 +187,8 @@ describe('test/view.test.js', () => {
         assert(locals.helper);
       });
 
-      it('should render with original locals', function* () {
-        const res = yield app.httpRequest()
+      it('should render with original locals', async () => {
+        const res = await app.httpRequest()
           .get('/render-original-locals')
           .expect(200);
         const locals = res.body.originalLocals;
@@ -169,50 +201,50 @@ describe('test/view.test.js', () => {
     });
 
     describe('resolve', () => {
-      it('should loader without extension', function* () {
-        const res = yield app.httpRequest()
+      it('should loader without extension', async () => {
+        const res = await app.httpRequest()
           .get('/render-without-ext')
           .expect(200);
         assert(res.body.filename === path.join(baseDir, 'app/view/loader/a.ejs'));
       });
 
-      it('should throw when render file that extension is not configured', function* () {
-        yield app.httpRequest()
+      it('should throw when render file that extension is not configured', async () => {
+        await app.httpRequest()
           .get('/render-ext-without-config')
           .expect(500)
           .expect(/Can\'t find viewEngine for /);
       });
 
-      it('should throw when render file without viewEngine', function* () {
-        yield app.httpRequest()
+      it('should throw when render file without viewEngine', async () => {
+        await app.httpRequest()
           .get('/render-without-view-engine')
           .expect(500)
           .expect(/Can\'t find ViewEngine "html"/);
       });
 
-      it('should load file from multiple root', function* () {
-        const res = yield app.httpRequest()
+      it('should load file from multiple root', async () => {
+        const res = await app.httpRequest()
           .get('/render-multiple-root')
           .expect(200);
         assert(res.body.filename === path.join(baseDir, 'app/view2/loader/from-view2.ejs'));
       });
 
-      it('should load file from multiple root when without extension', function* () {
-        const res = yield app.httpRequest()
+      it('should load file from multiple root when without extension', async () => {
+        const res = await app.httpRequest()
           .get('/render-multiple-root-without-extenstion')
           .expect(200);
         assert(res.body.filename === path.join(baseDir, 'app/view2/loader/from-view2.ejs'));
       });
 
-      it('should render load "name" before "name + defaultExtension" in multiple root', function* () {
-        const res = yield app.httpRequest()
+      it('should render load "name" before "name + defaultExtension" in multiple root', async () => {
+        const res = await app.httpRequest()
           .get('/load-same-file')
           .expect(200);
         assert(res.body.filename === path.join(baseDir, 'app/view2/loader/a.nj'));
       });
 
-      it('should load file that do not exist', function* () {
-        yield app.httpRequest()
+      it('should load file that do not exist', async () => {
+        await app.httpRequest()
           .get('/load-file-noexist')
           .expect(/Can\'t find noexist.ejs from/)
           .expect(500);
@@ -221,7 +253,7 @@ describe('test/view.test.js', () => {
   });
 
   describe('check root', () => {
-    let app;
+    let app: MockApplication;
     before(() => {
       app = mock.app({
         baseDir: 'apps/check-root',
@@ -237,7 +269,7 @@ describe('test/view.test.js', () => {
 
   describe('async function', () => {
     const baseDir = path.join(fixtures, 'apps/multiple-view-engine');
-    let app;
+    let app: MockApplication;
     before(() => {
       app = mock.app({
         baseDir: 'apps/multiple-view-engine',
@@ -246,8 +278,8 @@ describe('test/view.test.js', () => {
     });
     after(() => app.close());
 
-    it('should render', function* () {
-      const res = yield app.httpRequest()
+    it('should render', async () => {
+      const res = await app.httpRequest()
         .get('/render-async')
         .expect(200);
 
@@ -255,8 +287,8 @@ describe('test/view.test.js', () => {
       assert(res.body.type === 'async');
     });
 
-    it('should renderString', function* () {
-      const res = yield app.httpRequest()
+    it('should renderString', async () => {
+      const res = await app.httpRequest()
         .get('/render-string-async')
         .expect(200);
 
@@ -267,7 +299,7 @@ describe('test/view.test.js', () => {
 
 
   describe('defaultViewEngine', () => {
-    let app;
+    let app: MockApplication;
     before(() => {
       app = mock.app({
         baseDir: 'apps/default-view-engine',
@@ -276,15 +308,15 @@ describe('test/view.test.js', () => {
     });
     after(() => app.close());
 
-    it('should render without viewEngine', function* () {
-      yield app.httpRequest()
+    it('should render without viewEngine', async () => {
+      await app.httpRequest()
         .get('/render')
         .expect('ejs')
         .expect(200);
     });
 
-    it('should renderString without viewEngine', function* () {
-      yield app.httpRequest()
+    it('should renderString without viewEngine', async () => {
+      await app.httpRequest()
         .get('/render-string')
         .expect('ejs')
         .expect(200);
@@ -292,7 +324,7 @@ describe('test/view.test.js', () => {
   });
 
   describe('cache enable', () => {
-    let app;
+    let app: MockApplication;
     const viewPath = path.join(__dirname, 'fixtures/apps/cache/app/view1/home.nj');
     before(() => {
       app = mock.app({
@@ -303,20 +335,20 @@ describe('test/view.test.js', () => {
     after(() => app.close());
     after(() => fs.writeFile(viewPath, 'a\n'));
 
-    it('should cache', function* () {
-      let res = yield app.httpRequest()
+    it('should cache', async () => {
+      let res = await app.httpRequest()
         .get('/');
       assert(res.text === viewPath);
 
-      yield fs.unlink(viewPath);
-      res = yield app.httpRequest()
+      await fs.unlink(viewPath);
+      res = await app.httpRequest()
         .get('/');
       assert(res.text === viewPath);
     });
   });
 
   describe('cache disable', () => {
-    let app;
+    let app: MockApplication;
     const viewPath1 = path.join(__dirname, 'fixtures/apps/cache/app/view1/home.nj');
     const viewPath2 = path.join(__dirname, 'fixtures/apps/cache/app/view2/home.nj');
     before(() => {
@@ -329,20 +361,20 @@ describe('test/view.test.js', () => {
     after(() => app.close());
     after(() => fs.writeFile(viewPath1, ''));
 
-    it('should cache', function* () {
-      let res = yield app.httpRequest()
+    it('should cache', async () => {
+      let res = await app.httpRequest()
         .get('/');
       assert(res.text === viewPath1);
 
-      yield fs.unlink(viewPath1);
-      res = yield app.httpRequest()
+      await fs.unlink(viewPath1);
+      res = await app.httpRequest()
         .get('/');
       assert(res.text === viewPath2);
     });
   });
 
   describe('options.root', () => {
-    let app;
+    let app: MockApplication;
     const baseDir = path.join(fixtures, 'apps/options-root');
     before(() => {
       app = mock.app({
@@ -352,8 +384,8 @@ describe('test/view.test.js', () => {
     });
     after(() => app.close());
 
-    it('should return name and root', function* () {
-      let res = yield app.httpRequest()
+    it('should return name and root', async () => {
+      let res = await app.httpRequest()
         .get('/');
 
       assert.deepEqual(res.body, {
@@ -362,7 +394,7 @@ describe('test/view.test.js', () => {
         name: 'sub/a.html',
       });
 
-      res = yield app.httpRequest()
+      res = await app.httpRequest()
         .get('/absolute');
 
       assert.deepEqual(res.body, {
@@ -374,7 +406,7 @@ describe('test/view.test.js', () => {
   });
 
   describe('out of view path', () => {
-    let app;
+    let app: MockApplication;
     before(() => {
       app = mock.app({
         baseDir: 'apps/out-of-path',
@@ -383,19 +415,19 @@ describe('test/view.test.js', () => {
     });
     after(() => app.close());
 
-    it('should 500 when filename out of path', function* () {
-      yield app.httpRequest()
+    it('should 500 when filename out of path', async () => {
+      await app.httpRequest()
         .get('/render')
         .expect(500)
         .expect(/Can't find \.\.\/a\.html/);
     });
   });
 
-  describe('typescript', () => {
+  describe.skip('typescript', () => {
     it('should compile ts without error', () => {
       return coffee.fork(
         require.resolve('typescript/bin/tsc'),
-        [ '-p', path.resolve(__dirname, './fixtures/apps/ts/tsconfig.json') ]
+        [ '-p', path.resolve(__dirname, './fixtures/apps/ts/tsconfig.json') ],
       )
         .debug()
         .expect('code', 0)

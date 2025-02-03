@@ -1,8 +1,6 @@
-'use strict';
-
 module.exports = app => {
   class View {
-    * render(name, locals, options) {
+    async render(name, locals, options) {
       return {
         fullpath: name,
         root: options.root,
@@ -10,7 +8,7 @@ module.exports = app => {
       };
     }
 
-    * renderString(name) {
+    async renderString(name) {
       return name;
     }
   }

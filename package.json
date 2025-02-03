@@ -1,9 +1,17 @@
 {
-  "name": "egg-view",
+  "name": "@eggjs/view",
   "version": "2.1.4",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "Base view plugin for egg",
   "eggPlugin": {
-    "name": "view"
+    "name": "view",
+    "exports": {
+      "import": "./dist/esm",
+      "require": "./dist/commonjs",
+      "typescript": "./src"
+    }
   },
   "keywords": [
     "egg",
@@ -12,54 +20,75 @@
     "egg-view",
     "view"
   ],
-  "dependencies": {
-    "mz": "^2.7.0"
-  },
-  "devDependencies": {
-    "@eggjs/tsconfig": "^1.0.0",
-    "@types/node": "^16",
-    "autod": "^3.1.2",
-    "coffee": "^5.4.0",
-    "egg": "^2.14.2",
-    "egg-bin": "^4",
-    "egg-ci": "^1",
-    "egg-mock": "^4.2.1",
-    "eslint": "^4",
-    "eslint-config-egg": "5",
-    "mz-modules": "^1.0.0",
-    "typescript": "^4.7.3"
-  },
-  "engines": {
-    "node": ">=8.0.0"
-  },
-  "scripts": {
-    "autod": "autod",
-    "test": "npm run lint -- --fix && npm run test-local",
-    "test-local": "egg-bin test",
-    "cov": "egg-bin cov",
-    "lint": "eslint .",
-    "ci": "npm run lint && npm run cov",
-    "pkgfiles": "egg-bin pkgfiles"
-  },
-  "files": [
-    "app",
-    "lib",
-    "index.d.ts",
-    "config"
-  ],
-  "types": "index.d.ts",
-  "ci": {
-    "version": "8, 10, 12, 14, 16",
-    "type": "github"
-  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/eggjs/egg-view.git"
+    "url": "git+https://github.com/eggjs/view.git"
   },
   "bugs": {
     "url": "https://github.com/eggjs/egg/issues"
   },
-  "homepage": "https://github.com/eggjs/egg-view#readme",
+  "homepage": "https://github.com/eggjs/view#readme",
   "author": "popomore <sakura9515@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "engines": {
+    "node": ">= 18.19.0"
+  },
+  "dependencies": {
+    "@eggjs/core": "^6.2.13",
+    "is-type-of": "^2.2.0",
+    "utility": "^2.5.0"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.17.3",
+    "@eggjs/bin": "7",
+    "@eggjs/mock": "^6.0.5",
+    "@eggjs/tsconfig": "1",
+    "@types/mocha": "10",
+    "@types/node": "22",
+    "coffee": "^5.5.1",
+    "egg": "4",
+    "eslint": "8",
+    "eslint-config-egg": "14",
+    "rimraf": "6",
+    "tshy": "3",
+    "tshy-after": "1",
+    "typescript": "5"
+  },
+  "scripts": {
+    "lint": "eslint --cache src test --ext .ts",
+    "pretest": "npm run clean && npm run lint -- --fix",
+    "test": "egg-bin test",
+    "preci": "npm run clean &&  npm run lint",
+    "ci": "egg-bin cov",
+    "postci": "npm run prepublishOnly && npm run clean",
+    "clean": "rimraf dist",
+    "prepublishOnly": "tshy && tshy-after && attw --pack"
+  },
+  "type": "module",
+  "tshy": {
+    "exports": {
+      ".": "./src/index.ts",
+      "./package.json": "./package.json"
+    }
+  },
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/index.d.ts",
+        "default": "./dist/commonjs/index.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "types": "./dist/commonjs/index.d.ts",
+  "main": "./dist/commonjs/index.js",
+  "module": "./dist/esm/index.js"
 }
