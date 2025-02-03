@@ -54,12 +54,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/eggjs/egg-view.git"
+    "url": "git+https://github.com/eggjs/view.git"
   },
   "bugs": {
     "url": "https://github.com/eggjs/egg/issues"
   },
-  "homepage": "https://github.com/eggjs/egg-view#readme",
+  "homepage": "https://github.com/eggjs/view#readme",
   "author": "popomore <sakura9515@gmail.com>",
   "license": "MIT"
 }

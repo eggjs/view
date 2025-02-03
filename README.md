@@ -15,7 +15,7 @@ Base view plugin for egg
 ## Install
 
 ```bash
-$ npm i egg-view --save
+$ npm i egg-view@2 --save
 ```
 
 ## Usage
